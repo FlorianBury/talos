@@ -75,6 +75,7 @@ def Autom8(scan_object,
     '''
 
     # evaluate and add the evaluation scores
+    print ('autom8')
     scan_object.evaluate_models(x_val,
                                 y_val,
                                 n=n,
@@ -85,11 +86,11 @@ def Autom8(scan_object,
                                 asc=False)
 
     # make predictions with the best model
-    preds = scan_object.best_model('eval_f1score_mean')
+    preds = scan_object.best_model('eval_mean')
     scan_object.preds = preds.predict(x_val)
 
     # print out the best model parameters and stats
-    scan_object.preds_model = scan_object.data.sort_values('eval_f1score_mean',
+    scan_object.preds_model = scan_object.data.sort_values('eval_mean',
                                                            ascending=False).iloc[0]
 
     return scan_object
