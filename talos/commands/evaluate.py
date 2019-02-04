@@ -1,6 +1,6 @@
-from numpy import mean, std
+from numpy import mean, std, asarray
 
-from sklearn.metrics import f1_score
+from sklearn.metrics import f1_score, mean_squared_error
 
 from ..utils.validation_split import kfold
 from ..utils.best_model import best_model, activate_model
@@ -38,8 +38,12 @@ class Evaluate:
 
         for i in range(folds):
             y_pred = model.predict(kx[i]) >= 0.5
-            scores = f1_score(y_pred, ky[i], average=average)
-            out.append(scores * 100)
+            #scores = f1_score(y_pred, ky[i], average=average)
+            y_pred = asarray(model.predict(kx[i]) )
+            scores = mean_squared_error(y_pred,ky[i])
+            out.append(scores)
+
+            #out.append(scores * 100)
 
         if print_out is True:
             print("%.2f%% (+/- %.2f%%)" % (mean(out), std(out)))
