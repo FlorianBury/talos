@@ -1,9 +1,9 @@
-from keras.layers import Dense, Dropout
+from keras.layers import Dense, Dropout, BatchNormalization
 from .shapes import shapes
 from ..utils.exceptions import TalosTypeError, TalosParamsError
 
 class hidden_layers:
-    def __init__(self,params,last_neuron):
+    def __init__(self,params,last_neuron,batch_normalization=False):
 
         try:
             self.kernel_initializer = params['kernel_initializer']
@@ -84,6 +84,8 @@ class hidden_layers:
 
         for i in range(self.hidden_layers):
 
+            if batch_normalization:
+                model.add(BatchNormalization())
             model.add(Dense(self.layer_neurons[i],
                             activation=self.activation,
                             use_bias=self.use_bias,
@@ -94,7 +96,6 @@ class hidden_layers:
                             activity_regularizer=self.activity_regularizer,
                             kernel_constraint=self.kernel_constraint,
                             bias_constraint=self.bias_constraint))
-
             model.add(Dropout(self.dropout))
 
 
@@ -110,6 +111,8 @@ class hidden_layers:
         Handles things in a way where any number of layers can be tried
         with matching hyperparameters.'''
         for i in range(self.hidden_layers):
+            if batch_normalization:
+                layer = BatchNormalization()(layer)
             layer = Dense(self.layer_neurons[i],
                             activation=self.activation,
                             use_bias=self.use_bias,
@@ -120,7 +123,6 @@ class hidden_layers:
                             activity_regularizer=self.activity_regularizer,
                             kernel_constraint=self.kernel_constraint,
                             bias_constraint=self.bias_constraint)(layer)
-
             layer = Dropout(self.dropout)(layer)
 
         return layer
