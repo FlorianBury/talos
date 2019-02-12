@@ -4,6 +4,7 @@ from ..utils.exceptions import TalosTypeError, TalosParamsError
 
 class hidden_layers:
     def __init__(self,params,last_neuron,batch_normalization=False):
+        self.batch_normalization = batch_normalization
 
         try:
             self.kernel_initializer = params['kernel_initializer']
@@ -84,7 +85,7 @@ class hidden_layers:
 
         for i in range(self.hidden_layers):
 
-            if batch_normalization:
+            if self.batch_normalization:
                 model.add(BatchNormalization())
             model.add(Dense(self.layer_neurons[i],
                             activation=self.activation,
@@ -111,7 +112,7 @@ class hidden_layers:
         Handles things in a way where any number of layers can be tried
         with matching hyperparameters.'''
         for i in range(self.hidden_layers):
-            if batch_normalization:
+            if self.batch_normalization:
                 layer = BatchNormalization()(layer)
             layer = Dense(self.layer_neurons[i],
                             activation=self.activation,
