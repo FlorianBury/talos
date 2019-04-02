@@ -31,7 +31,6 @@ class Evaluate:
         out = []
         if model_id is None:
             model_id = best_model(self.scan_object, metric, asc)
-
         model = activate_model(self.scan_object, model_id)
 
         kx, ky = kfold(x, y, folds, shuffle)
