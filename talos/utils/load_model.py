@@ -1,7 +1,7 @@
 from keras.models import model_from_json
 
 
-def load_model(saved_model):
+def load_model(saved_model,custom_objects=None):
 
     '''Load a Model from local disk
 
@@ -17,7 +17,7 @@ def load_model(saved_model):
     json_file = open(saved_model + ".json", 'r')
     loaded_model_json = json_file.read()
     json_file.close()
-    model = model_from_json(loaded_model_json)
+    model = model_from_json(loaded_model_json,custom_objects=custom_objects)
     model.load_weights(saved_model + '.h5')
 
     return model

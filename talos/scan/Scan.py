@@ -133,7 +133,6 @@ class Scan:
 
         # NOTE: these need to be follow the order from __init__
         # and all paramaters needs to be included here and only here.
-
         self.x = x
         self.y = y
         self.params = params
