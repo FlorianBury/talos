@@ -112,8 +112,6 @@ class hidden_layers:
         Handles things in a way where any number of layers can be tried
         with matching hyperparameters.'''
         for i in range(self.hidden_layers):
-            if self.batch_normalization:
-                layer = BatchNormalization()(layer)
             layer = Dense(self.layer_neurons[i],
                             activation=self.activation,
                             use_bias=self.use_bias,
@@ -124,6 +122,8 @@ class hidden_layers:
                             activity_regularizer=self.activity_regularizer,
                             kernel_constraint=self.kernel_constraint,
                             bias_constraint=self.bias_constraint)(layer)
+            if self.batch_normalization:
+                layer = BatchNormalization()(layer)
             layer = Dropout(self.dropout)(layer)
 
         return layer
