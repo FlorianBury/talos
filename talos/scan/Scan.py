@@ -129,7 +129,8 @@ class Scan:
                  print_params=False,
                  debug=False,
                  repetition=1,
-                 custom_objects={}):
+                 custom_objects={},
+                 path_model=''):
 
         # NOTE: these need to be follow the order from __init__
         # and all paramaters needs to be included here and only here.
@@ -161,6 +162,7 @@ class Scan:
         self.print_params = print_params
         self.repetition = repetition
         self.custom_objects = custom_objects
+        self.path_model = path_model
         # input parameters section ends
 
         self._null = self.runtime()

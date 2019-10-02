@@ -1,3 +1,4 @@
+import os
 from numpy import array, argpartition, savetxt
 from pandas import DataFrame
 
@@ -69,7 +70,7 @@ def run_round_results(self, out):
 def save_result(self):
     '''SAVES THE RESULTS/PARAMETERS TO A CSV SPECIFIC TO THE EXPERIMENT'''
 
-    savetxt(self.experiment_name + '.csv',
+    savetxt(os.path.join(self.path_model,self.experiment_name + '.csv'),
             self.result,
             fmt='%s',
             delimiter=',')
