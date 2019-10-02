@@ -1,4 +1,4 @@
-from keras.models import model_from_json, load_model
+import keras.models 
 
 
 def load_model(saved_model,method='json',custom_objects=None):
@@ -19,9 +19,9 @@ def load_model(saved_model,method='json',custom_objects=None):
         json_file = open(saved_model + ".json", 'r')
         loaded_model_json = json_file.read()
         json_file.close()
-        model = model_from_json(loaded_model_json,custom_objects=custom_objects)
+        model = keras.models.model_from_json(loaded_model_json,custom_objects=custom_objects)
         model.load_weights(saved_model + '.h5')
     elif method == 'h5':
-        model = load_model(saved_model + '_full.h5') 
+        model = keras.models.load_model(saved_model + '_full.h5') 
 
     return model
