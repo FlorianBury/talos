@@ -36,7 +36,7 @@ class Evaluate:
         kx, ky = kfold(x, y, folds, shuffle)
 
         for i in range(folds):
-            y_pred = model.predict(kx[i]) >= 0.5
+            #y_pred = model.predict(kx[i]) >= 0.5
             #scores = f1_score(y_pred, ky[i], average=average)
             y_pred = asarray(model.predict(kx[i]) )
             scores = mean_squared_error(y_pred,ky[i])
