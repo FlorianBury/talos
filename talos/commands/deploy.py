@@ -16,11 +16,11 @@ class Deploy:
 
     '''Functionality for deploying a model to a filename'''
 
-    def __init__(self, scan_object, model_name, metric='val_acc', asc=False):
+    def __init__(self, scan_object, model_name, metric='val_acc', asc=False, path_model=''):
 
         self.scan_object = scan_object
-        os.mkdir(model_name)
-        self.path = model_name + '/' + model_name
+        os.mkdir(os.path.join(path_model,model_name))
+        self.path = os.path.join(path_model,model_name,model_name)
         self.model_name = model_name
         self.metric = metric
         self.asc = asc
@@ -49,6 +49,9 @@ class Deploy:
             json_file.write(model_json)
 
         self.model.save_weights(self.path + "_model.h5")
+        
+        self.model.save(self.path + "_model_full.h5")
+
         print("Deploy package" + " " + self.model_name + " " + "have been saved.")
 
     def save_details(self):
@@ -74,12 +77,11 @@ class Deploy:
     def save_readme(self):
 
         txt = 'To activate the assets in the Talos deploy package: \n\n   from talos.commands.restore import Restore \n   a = Restore(\'path_to_asset\')\n\nNow you will have an object similar to the Scan object, which can be used with other Talos commands as you would be able to with the Scan object'
-
-        text_file = open(self.path.split('/')[0] + '/README.txt', "w")
+        text_file = open(os.path.dirname(self.path) + '/README.txt', "w")
         text_file.write(txt)
         text_file.close()
 
     def package(self):
 
-        shutil.make_archive(self.model_name, 'zip', self.model_name)
-        shutil.rmtree(self.model_name)
+        shutil.make_archive(os.path.dirname(self.path), 'zip', os.path.dirname(self.path))
+        shutil.rmtree(os.path.dirname(self.path))

@@ -11,13 +11,14 @@ class Restore:
     '''Utility class for restoring the assets from Deploy()
     package.'''
 
-    def __init__(self, path_to_zip):
+    def __init__(self, path_to_zip,method='json',custom_objects=None):
 
         # create paths
         self.path_to_zip = path_to_zip
         self.extract_to = path_to_zip.replace('.zip', '')
         self.package_name = self.extract_to.split('/')[-1]
         self.file_prefix = self.extract_to + '/' + self.package_name
+        self.custom_objects = custom_objects
 
         # extract the zip
         # unpack_archive(self.path_to_zip, self.extract_to)
@@ -37,7 +38,7 @@ class Restore:
         self.y = read_csv(self.file_prefix + '_y.csv', header=None)
 
         # add model
-        self.model = load_model(self.file_prefix + '_model')
+        self.model = load_model(self.file_prefix + '_model',method=method, custom_objects=self.custom_objects)
 
         # add results
         self.results = read_csv(self.file_prefix + '_results.csv')

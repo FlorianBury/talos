@@ -127,11 +127,13 @@ class Scan:
                  clear_tf_session=True,
                  disable_progress_bar=False,
                  print_params=False,
-                 debug=False):
+                 debug=False,
+                 repetition=1,
+                 custom_objects={},
+                 path_model=''):
 
         # NOTE: these need to be follow the order from __init__
         # and all paramaters needs to be included here and only here.
-
         self.x = x
         self.y = y
         self.params = params
@@ -158,6 +160,9 @@ class Scan:
         self.disable_progress_bar = disable_progress_bar
         self.last_epoch_value = last_epoch_value
         self.print_params = print_params
+        self.repetition = repetition
+        self.custom_objects = custom_objects
+        self.path_model = path_model
         # input parameters section ends
 
         self._null = self.runtime()

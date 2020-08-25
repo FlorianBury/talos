@@ -1,4 +1,4 @@
-from numpy import arange, unique, array, column_stack
+from numpy import arange, unique, array, column_stack, concatenate
 from itertools import product
 
 from ..reducers.sample_reducer import sample_reducer
@@ -33,6 +33,10 @@ class ParamGrid:
 
         # add the log index to param grid
         self.param_grid = column_stack((self.param_grid, self.param_log))
+
+        # Repeat model a certain amount of times #
+        for i in range(1,self.main_self.repetition):
+            self.param_grid = concatenate((self.param_grid,self.param_grid),axis=0)
 
 
 

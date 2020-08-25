@@ -1,80 +1,129 @@
-from keras.layers import Dense, Dropout
+from keras.layers import Dense, Dropout, BatchNormalization
 from .shapes import shapes
-from ..utils.exceptions import TalosTypeError
+from ..utils.exceptions import TalosTypeError, TalosParamsError
+
+class hidden_layers:
+    def __init__(self,params,last_neuron,batch_normalization=False):
+        self.batch_normalization = batch_normalization
+
+        try:
+            self.kernel_initializer = params['kernel_initializer']
+        except KeyError:
+            self.kernel_initializer = 'glorot_uniform'
+
+        try:
+            self.kernel_regularizer = params['kernel_regularizer']
+        except KeyError:
+            self.kernel_regularizer = None
+
+        try:
+            self.bias_initializer = params['bias_initializer']
+        except KeyError:
+            self.bias_initializer = 'zeros'
+
+        try:
+            self.bias_regularizer = params['bias_regularizer']
+        except KeyError:
+            self.bias_regularizer = None
+
+        try:
+            self.use_bias = params['use_bias']
+        except KeyError:
+            self.use_bias = True
+
+        try:
+            self.activity_regularizer = params['activity_regularizer']
+        except KeyError:
+            self.activity_regularizer = None
+
+        try:
+            self.kernel_constraint = params['kernel_constraint']
+        except KeyError:
+            self.kernel_constraint = None
+
+        try:
+            self.bias_constraint = params['bias_constraint']
+        except KeyError:
+            self.bias_constraint = None
+
+        if isinstance(params['activation'], str) is True:
+            raise TalosTypeError('When hidden_layers are used, activation needs to be an object and not string')
+
+        try:
+            params['shapes']
+            self.layer_neurons = shapes(params, last_neuron)
+        except KeyError:
+            self.layer_neurons = [params['first_neuron']] * params['hidden_layers']
+
+        if 'activation' in params:
+            self.activation = params['activation']
+        else:
+            raise TalosParamsError('activation key is needed in the parameters')
+
+        if 'hidden_layers' in params:
+            self.hidden_layers = params['hidden_layers']
+        else:
+            raise TalosParamsError('hidden_layers key is needed in the parameters')
+
+        if 'dropout' in params:
+            self.dropout= params['dropout']
+        else:
+            raise TalosParamsError('dropout key is needed in the parameters')
+
+    def sequential(self,model):
+
+        '''HIDDEN LAYER Generator
+
+        NOTE: 'first_neuron', 'dropout', and 'hidden_layers' need
+        to be present in the params dictionary.
+
+        Hidden layer generation for the cases where number
+        of layers is used as a variable in the optimization process.
+        Handles things in a way where any number of layers can be tried
+        with matching hyperparameters.'''
 
 
-def hidden_layers(model, params, last_neuron):
+        for i in range(self.hidden_layers):
 
-    '''HIDDEN LAYER Generator
+            if self.batch_normalization:
+                model.add(BatchNormalization())
+            model.add(Dense(self.layer_neurons[i],
+                            activation=self.activation,
+                            use_bias=self.use_bias,
+                            kernel_initializer=self.kernel_initializer,
+                            kernel_regularizer=self.kernel_regularizer,
+                            bias_initializer=self.bias_initializer,
+                            bias_regularizer=self.bias_regularizer,
+                            activity_regularizer=self.activity_regularizer,
+                            kernel_constraint=self.kernel_constraint,
+                            bias_constraint=self.bias_constraint))
+            model.add(Dropout(self.dropout))
 
-    NOTE: 'first_neuron', 'dropout', and 'hidden_layers' need
-    to be present in the params dictionary.
 
-    Hidden layer generation for the cases where number
-    of layers is used as a variable in the optimization process.
-    Handles things in a way where any number of layers can be tried
-    with matching hyperparameters.'''
+    def API(self,layer):
 
-    try:
-        kernel_initializer = params['kernel_initializer']
-    except KeyError:
-        kernel_initializer = 'glorot_uniform'
+        '''HIDDEN LAYER Generator
 
-    try:
-        kernel_regularizer = params['kernel_regularizer']
-    except KeyError:
-        kernel_regularizer = None
+        NOTE: 'first_neuron', 'dropout', and 'hidden_layers' need
+        to be present in the params dictionary.
 
-    try:
-        bias_initializer = params['bias_initializer']
-    except KeyError:
-        bias_initializer = 'zeros'
+        Hidden layer generation for the cases where number
+        of layers is used as a variable in the optimization process.
+        Handles things in a way where any number of layers can be tried
+        with matching hyperparameters.'''
+        for i in range(self.hidden_layers):
+            layer = Dense(self.layer_neurons[i],
+                            activation=self.activation,
+                            use_bias=self.use_bias,
+                            kernel_initializer=self.kernel_initializer,
+                            kernel_regularizer=self.kernel_regularizer,
+                            bias_initializer=self.bias_initializer,
+                            bias_regularizer=self.bias_regularizer,
+                            activity_regularizer=self.activity_regularizer,
+                            kernel_constraint=self.kernel_constraint,
+                            bias_constraint=self.bias_constraint)(layer)
+            if self.batch_normalization:
+                layer = BatchNormalization()(layer)
+            layer = Dropout(self.dropout)(layer)
 
-    try:
-        bias_regularizer = params['bias_regularizer']
-    except KeyError:
-        bias_regularizer = None
-
-    try:
-        use_bias = params['use_bias']
-    except KeyError:
-        use_bias = True
-
-    try:
-        activity_regularizer = params['activity_regularizer']
-    except KeyError:
-        activity_regularizer = None
-
-    try:
-        kernel_constraint = params['kernel_constraint']
-    except KeyError:
-        kernel_constraint = None
-
-    try:
-        bias_constraint = params['bias_constraint']
-    except KeyError:
-        bias_constraint = None
-
-    if isinstance(params['activation'], str) is True:
-        raise TalosTypeError('When hidden_layers are used, activation needs to be an object and not string')
-
-    try:
-        params['shapes']
-        layer_neurons = shapes(params, last_neuron)
-    except KeyError:
-        layer_neurons = [params['first_neuron']] * params['hidden_layers']
-
-    for i in range(params['hidden_layers']):
-
-        model.add(Dense(layer_neurons[i],
-                        activation=params['activation'],
-                        use_bias=use_bias,
-                        kernel_initializer=kernel_initializer,
-                        kernel_regularizer=kernel_regularizer,
-                        bias_initializer=bias_initializer,
-                        bias_regularizer=bias_regularizer,
-                        activity_regularizer=activity_regularizer,
-                        kernel_constraint=kernel_constraint,
-                        bias_constraint=bias_constraint))
-
-        model.add(Dropout(params['dropout']))
+        return layer

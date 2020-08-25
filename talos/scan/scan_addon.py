@@ -38,20 +38,20 @@ def func_evaluate(scan_object,
 
     warnings.simplefilter('ignore')
 
-    picks = scan_object.data.sort_values(metric,
-                                         ascending=asc).index.values[:n]
-
+    if n == -1:
+        n = len(scan_object.data)
     if n > len(scan_object.data):
         data_len = len(scan_object.data)
     else:
         data_len = n
 
+    picks = scan_object.data.sort_values(metric,
+                                         ascending=asc).index.values[:n]
     out = []
 
     pbar = tqdm(total=data_len)
 
     for i in range(len(scan_object.data)):
-
         if i in list(picks):
             evalulate_object = Evaluate(scan_object)
             temp = evalulate_object.evaluate(x_val, y_val,
@@ -68,5 +68,5 @@ def func_evaluate(scan_object,
 
     pbar.close()
 
-    scan_object.data['eval_f1score_mean'] = [i[0] for i in out]
-    scan_object.data['eval_f1score_std'] = [i[1] for i in out]
+    scan_object.data['eval_mean'] = [i[0] for i in out]
+    scan_object.data['eval_std'] = [i[1] for i in out]

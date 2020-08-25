@@ -10,10 +10,10 @@ attrs_to_keep = ['data', 'x', 'y', 'peak_epochs_df',
                  'reduction_method', 'reduction_metric',
                  'reduction_threshold', 'reduction_window',
                  'params', 'saved_models', 'saved_weights',
-                 'experiment_name']
+                 'experiment_name','custom_objects']
 
 attrs_final = ['data', 'x', 'y', 'peak_epochs_df', 'round_times',
-               'params', 'saved_models', 'saved_weights']
+               'params', 'saved_models', 'saved_weights','custom_objects']
 
 
 def scan_finish(self):
