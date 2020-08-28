@@ -1,6 +1,7 @@
-from numpy import mean, std, asarray
+from numpy import mean, std, asarray, arange
 
-from sklearn.metrics import f1_score, mean_squared_error
+from sklearn.metrics import f1_score
+from sklearn import preprocessing
 
 from ..utils.validation_split import kfold
 from ..utils.best_model import best_model, activate_model
@@ -33,16 +34,14 @@ class Evaluate:
             model_id = best_model(self.scan_object, metric, asc)
         model = activate_model(self.scan_object, model_id)
 
+        lb = preprocessing.LabelBinarizer()
+        lb.fit(arange(y.shape[1]))
+        x = lb.transform(model.predict(x).argmax(axis=1))
         kx, ky = kfold(x, y, folds, shuffle)
 
         for i in range(folds):
-            y_pred = model.predict(kx[i]) >= 0.5
-            scores = f1_score(y_pred, ky[i], average=average)
-            #y_pred = asarray(model.predict(kx[i]) )
-            #scores = mean_squared_error(y_pred,ky[i])
-            out.append(scores)
-
-            #out.append(scores * 100)
+            scores = f1_score(kx[i], ky[i], average=average)
+            out.append(scores * 100)
 
         if print_out is True:
             print("%.2f%% (+/- %.2f%%)" % (mean(out), std(out)))
